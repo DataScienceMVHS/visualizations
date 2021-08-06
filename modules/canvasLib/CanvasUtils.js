@@ -24,6 +24,7 @@ export default function CanvasUtils(canvas=null) {
         this.panning = true;
         this.panningX = e.clientX;
         this.panningY = e.clientY;
+        this.camera.render(this.context, this.objs, true);
     });
     this.canvas.addEventListener('pointermove', (e)=>{
         if (this.panning) {
@@ -35,6 +36,7 @@ export default function CanvasUtils(canvas=null) {
     });
     this.canvas.addEventListener('pointerup', (e)=>{
         this.panning = false;
+        this.camera.render(this.context, this.objs);
     });
     this.canvas.addEventListener('pointercancel', (e)=>{
         this.panning = false;

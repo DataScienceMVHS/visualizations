@@ -11,29 +11,33 @@ export default function Camera(canvas) {
     this.aspect = this.width / this.height;
     this.render = function(ctx, objs, renderGrid = false) {
         ctx.clearRect(0, 0, this.width, this.height);
-        ctx.save();
-        ctx.translate(this.pos.x + this.width/2, this.pos.y + this.height/2);
-        ctx.rotate(this.rotation);
-        ctx.scale(this.scale, this.scale);
         if (renderGrid) {
             ctx.strokeStyle = '#000';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            let xStart = -this.pos.x-this.width/2+this.pos.x%this.gridSize;
-            let xEnd = this.width*this.scale*2-this.pos.x;
-            let yStart = -this.pos.y-this.height/2+this.pos.y%this.gridSize;
-            let yEnd = this.height*this.scale*2-this.pos.y-this.pos.y%this.gridSize;
-            for (let x = xStart; x < xEnd; x += this.gridSize) {
-                console.log(x);
+            ctx.save()
+            ctx.globalAlpha = 0.5;
+            ctx.translate(this.width / 2, this.height / 2);
+            ctx.rotate(this.rotation);
+            let xStart =  this.pos.x%(this.gridSize*this.scale) - this.gridSize - this.width/2 - this.width*Math.sin(this.rotation);
+            let xEnd = this.width/2 + this.width*Math.cos(this.rotation);
+            let yStart = this.pos.y%(this.gridSize*this.scale) - this.gridSize - this.height/2 - this.height*Math.cos(this.rotation);
+            let yEnd = this.height/2 + this.height*Math.sin(this.rotation);
+            for (let x = xStart; x < xEnd; x += this.gridSize*this.scale) {
                 ctx.moveTo(x, yStart);
                 ctx.lineTo(x, yEnd);
             }
-            for (let y = -this.pos.y-this.height/2; y < this.height*this.scale*2-this.pos.y; y += this.gridSize) {
+            for (let y = yStart; y < yEnd; y += this.gridSize*this.scale) {
                 ctx.moveTo(xStart, y);
                 ctx.lineTo(xEnd, y);
             }
             ctx.stroke();
+            ctx.restore();
         }
+        ctx.save();
+        ctx.translate(this.pos.x + this.width/2, this.pos.y + this.height/2);
+        ctx.scale(this.scale, this.scale);
+        ctx.rotate(this.rotation);
         objs.forEach(obj => {
             obj.render(ctx);
         });
